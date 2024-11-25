@@ -16,18 +16,18 @@ This API provides functionality to manage a library system, ensuring secure acce
 
 ## API Endpoints
 
-1. /user/registration
-2. /user/authentication
-3. /add-books-author
-4. /display-books-authors-both
-5. /update-book
-6. /update-author
-7. /delete-book
-8. /delete-author
+1. `/user/registration`
+2. `/user/authentication`
+3. `/add-books-author`
+4. `/display-books-authors-both`
+5. `/update-book`
+6. `/update-author`
+7. `/delete-book`
+8. `/delete-author`
 
 ## DESCRIPTION, PAYLOAD, RESPONSE of API Endpoints
 
-1. /user/registration
+1. `/user/registration`
 
 - **Method:** `POST`
 - **Description:** This endpoint registers a new user in the library system by creating an account with their provided credentials. Upon successful registration, the system stores the user's information securely and returns a confirmation response.
@@ -52,7 +52,7 @@ This API provides functionality to manage a library system, ensuring secure acce
     }
     </pre>
 
-2. /user/authentication
+2. `/user/authentication`
 
 - **Method:** `POST`
 - **Description:** Authenticates a user by validating their credentials (username and password). Upon successful authentication, the system generates and returns a JWT (JSON Web Token) that can be used to access protected routes within the library system.
@@ -80,7 +80,7 @@ This API provides functionality to manage a library system, ensuring secure acce
     }
     </pre>
 
-3. /add-books-author
+3. `/add-books-author`
 
 - **Method:** `POST`
 - **Description:** Adds a new author and their associated book to the library system. This endpoint ensures that only authorized users can add authors, maintaining the integrity and security of the library database.
@@ -110,7 +110,7 @@ This API provides functionality to manage a library system, ensuring secure acce
     }
   </pre>
 
-4. /display-books-authors-both
+4. `/display-books-authors-both`
 
 - **Method:** `POST`
 - **Description:** Retrieves a comprehensive list of books along with their associated authors, list of authors, and list of books from the library system. This endpoint provides detailed information, allowing users to view all books and their corresponding authors in a single response.
@@ -213,7 +213,7 @@ This API provides functionality to manage a library system, ensuring secure acce
     }
   </pre>
 
-5. /update-book
+5. `/update-book`
 
 - **Method:** `POST`
 - **Description:** Updates the details of an existing book in the library system. This endpoint allows authorized users to modify book information such as title of the book.
@@ -242,7 +242,7 @@ This API provides functionality to manage a library system, ensuring secure acce
     }
     </pre>
 
-6. /update-author
+6. `/update-author`
 
 - **Method:** `POST`
 - **Description:** Updates the details of an existing author in the library system. This endpoint allows authorized users to modify author information, such as name of the author.
@@ -271,7 +271,7 @@ This API provides functionality to manage a library system, ensuring secure acce
     }
     </pre>
 
-7. /delete-book
+7. `/delete-book`
 
 - **Method:** `POST`
 - **Description:** Deletes a specific book from the library system. This endpoint ensures only authorized users can perform deletions, protecting the integrity of the library's data.
@@ -299,7 +299,7 @@ This API provides functionality to manage a library system, ensuring secure acce
     }
     </pre>
 
-8. /delete-author
+8. `/delete-author`
 
 - **Method:** `POST`
 - **Description:** Deletes a specific author from the library system. This endpoint ensures only authorized users can perform deletions, maintaining the integrity and consistency of the library's data.
