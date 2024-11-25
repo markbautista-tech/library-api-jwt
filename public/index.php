@@ -134,11 +134,6 @@ $app->post('/user/authentication', function(Request $request, Response $response
 });
 
 
-
-// ------------------------------ACTIVITY-----------------------------
-
-
-
 // ADD BOOKS AND AUTHOR API
 $app->post('/add-books-author', function(Request $request, Response $response, array $args){
     $data = json_decode($request->getBody());
