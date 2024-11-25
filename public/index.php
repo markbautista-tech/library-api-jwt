@@ -239,7 +239,7 @@ $app->post('/add-books-author', function(Request $request, Response $response, a
         }
 
 
-    }catch (\Excemption $e){
+    }catch (\Exception $e){
         $response -> getBody() -> write(json_encode(array(
             "status" => "fail", 
             "data" => array(
@@ -513,7 +513,7 @@ $app->post('/display-books-authors-both', function(Request $request, Response $r
                 ))));
                 break;
         }
-    } catch (\Excemption $e) {
+    } catch (\Exception $e) {
         $response -> getBody() -> write(json_encode(array(
             "status" => "fail", 
             "data" => array(
@@ -533,8 +533,8 @@ $app->post('/display-books-authors-both', function(Request $request, Response $r
 $app->post('/update-book', function(Request $request, Response $response, array $args){
     $data = json_decode($request->getBody());
 
-    $old_title = $data -> title_to_update;
-    $author = $data -> author;
+    $book_id = $data -> bookid;
+    $author_id = $data -> authorid;
     $new_title = $data -> new_title;
     $jwt = $data -> token;
 
@@ -567,73 +567,56 @@ $app->post('/update-book', function(Request $request, Response $response, array 
             $stmt = $conn -> prepare($sql_token_update);
             $stmt -> execute();
 
-            $sql_collection = "SELECT collectionid, b.title, a.name FROM books_authors ba 
-            JOIN books b ON ba.bookid = b.bookid 
-            JOIN authors a ON ba.authorid = a.authorid";
+            // $sql_collection = "SELECT collectionid, b.bookid, a.authorid FROM books_authors ba 
+            // JOIN books b ON ba.bookid = b.bookid 
+            // JOIN authors a ON ba.authorid = a.authorid";
+            $sql_collection = "SELECT ba.collectionid 
+                               FROM books_authors ba 
+                               WHERE ba.bookid = '".$book_id."' AND ba.authorid = '".$author_id."'";
             $stmt = $conn->prepare($sql_collection);
             $stmt->execute();
             $stmt->setFetchMode(PDO::FETCH_ASSOC);
             $result_collection = $stmt->fetchAll();
 
-            if ($result_collection != null){
+            if ($result_collection) {
+                
+                $sql_book_update = "UPDATE books SET title = '".$new_title."' WHERE bookid = '".$book_id."'";
+                $stmt = $conn->prepare($sql_book_update);
+                $stmt->execute();
 
-                $is_found = false;
+                
+                $payload = [
+                    'iss' => 'http://security.org',
+                    'aud' => 'http://security.com',
+                    'iat' => $expire,
+                    'exp' => $expire + 300,
+                    'data' => array(
+                        "status" => $token_status,
+                        )
+                ];
+                $new_jwt = JWT::encode($payload, $key, 'HS256');
 
+                // Insert the new token
+                $sql_token_update = "UPDATE token SET status='inactive' WHERE token='".$jwt."'" ;
+                $stmt = $conn->prepare($sql_token_update);
+                $stmt->execute();
 
-                foreach ($result_collection as $collection){
-
-                    if($collection['title'] === $old_title && $collection['name'] === $author){
-                        $is_found = true;
-                        
-                        $sql_book_update = "UPDATE books 
-                        SET title = '".$new_title."' 
-                        WHERE title = '".$old_title."'";
-                        $stmt = $conn->prepare($sql_book_update);
-                        $stmt->execute();
-
-                        $payload = [
-                        'iss' => 'http://security.org',
-                        'aud' => 'http://security.com',
-                        'iat' => $expire,
-                        'exp' => $expire + 300,
-                        'data' => array(
-                            "status" => $token_status,
-                            )
-                        ];
-
-                        $jwt = JWT::encode($payload, $key, 'HS256');
-
-                        $sql_token = "INSERT INTO token(token, status) VALUES ('".$jwt."', 'active')";
-                        $stmt = $conn -> prepare($sql_token);
-                        $stmt -> execute();
-
-
-                        $response -> getBody() -> write(json_encode(array(
-                            "status" => "success", 
-                            "data" => array(
-                                "message" => "Successfully updated a book from records.",
-                                "new_token" => $jwt
-                        ))));
-
-                        break;
-                        
-                    }
-                }
-
-                if(!$is_found) {
-                    $response -> getBody() -> write(json_encode(array(
-                        "status" => "fail", 
-                        "data" => array(
-                            "title" => "Book and Author doesn't match."
-                    ))));
-                }
-
-            }else{
-                $response -> getBody() -> write(json_encode(array(
-                    "status" => "success", 
-                    "data" => array(
-                        "message" => "No collections found from records."
-                ))));
+                // Success response
+                $response->getBody()->write(json_encode([
+                    "status" => "success",
+                    "data" => [
+                        "message" => "Successfully updated the book.",
+                        "new_token" => $new_jwt
+                    ]
+                ]));
+            } else {
+                // Book-author relationship not found
+                $response->getBody()->write(json_encode([
+                    "status" => "fail",
+                    "data" => [
+                        "message" => "Book and author relationship doesn't match."
+                    ]
+                ]));
             }
 
 
@@ -646,7 +629,7 @@ $app->post('/update-book', function(Request $request, Response $response, array 
         }
 
         
-    } catch (\Excemption $e) {
+    } catch (\Exception $e) {
         $response -> getBody() -> write(json_encode(array(
             "status" => "fail", 
             "data" => array(
@@ -666,7 +649,15 @@ $app->post('/update-book', function(Request $request, Response $response, array 
 $app->post('/update-author', function(Request $request, Response $response, array $args){
     $data = json_decode($request->getBody());
 
-    $old_author = $data -> author_to_update;
+    if (!$data) {
+        $response->getBody()->write(json_encode([
+            "status" => "fail",
+            "data" => ["message" => "Invalid JSON or missing payload."]
+        ]));
+        return $response->withStatus(400);
+    }
+
+    $author_id = $data -> authorid;
     $new_author = $data -> new_author;
     $jwt = $data -> token;
     
@@ -708,7 +699,7 @@ $app->post('/update-author', function(Request $request, Response $response, arra
             if($result_authors != null){
                 $sql_update_author = "UPDATE authors 
                 SET name = '".$new_author."' 
-                WHERE name='".$old_author."'";
+                WHERE authorid='".$author_id."'";
                 $stmt = $conn -> prepare($sql_update_author);
                 $stmt -> execute();
 
@@ -753,7 +744,7 @@ $app->post('/update-author', function(Request $request, Response $response, arra
         }
 
 
-    } catch (\Excemption $e) {
+    } catch (\Exception $e) {
         $response -> getBody() -> write(json_encode(array(
             "status" => "fail", 
             "data" => array(
@@ -772,7 +763,7 @@ $app->post('/update-author', function(Request $request, Response $response, arra
 $app->post('/delete-author', function(Request $request, Response $response, array $args){
     $data = json_decode($request->getBody());
 
-    $author = $data -> author_to_delete;
+    $authorid = $data -> authorid;
     $jwt = $data -> token;
 
     $key = 'thisIsTheKey';
@@ -812,7 +803,7 @@ $app->post('/delete-author', function(Request $request, Response $response, arra
             $result_authors = $stmt->fetchAll();
 
             if ($result_authors != null){
-                $sql_delete_author = "DELETE FROM authors WHERE name='".$author."'";
+                $sql_delete_author = "DELETE FROM authors WHERE authorid='".$authorid."'";
                 $stmt = $conn -> prepare($sql_delete_author);
                 $stmt -> execute();
 
@@ -861,7 +852,7 @@ $app->post('/delete-author', function(Request $request, Response $response, arra
 
 
         
-    } catch (\Excemption $e) {
+    } catch (\Exception $e) {
         $response -> getBody() -> write(json_encode(array(
             "status" => "fail", 
             "data" => array(
@@ -883,7 +874,7 @@ $app->post('/delete-author', function(Request $request, Response $response, arra
 $app->post('/delete-book', function(Request $request, Response $response, array $args){
     $data = json_decode($request->getBody());
 
-    $book = $data -> book_to_delete;
+    $bookid = $data -> bookid;
     $jwt = $data -> token;
 
     $key = 'thisIsTheKey';
@@ -923,7 +914,7 @@ $app->post('/delete-book', function(Request $request, Response $response, array 
             $result_books = $stmt->fetchAll();
 
             if ($result_books != null){
-                $sql_delete_book = "DELETE FROM books WHERE title='".$book."'";
+                $sql_delete_book = "DELETE FROM books WHERE bookid='".$bookid."'";
                 $stmt = $conn -> prepare($sql_delete_book);
                 $stmt -> execute();
 
@@ -971,7 +962,7 @@ $app->post('/delete-book', function(Request $request, Response $response, array 
 
 
         
-    } catch (\Excemption $e) {
+    } catch (\Exception $e) {
         $response -> getBody() -> write(json_encode(array(
             "status" => "fail", 
             "data" => array(
