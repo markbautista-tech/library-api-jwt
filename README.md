@@ -37,8 +37,8 @@ This API provides functionality to manage a library system, ensuring secure acce
 - **Payload:**
     <pre>
     {
-    "username": "admin",
-    "password": "admin"
+        "username": "admin",
+        "password": "admin"
     }
     </pre>
 
@@ -47,8 +47,8 @@ This API provides functionality to manage a library system, ensuring secure acce
 - **Response:**
     <pre>
     {
-    "status": "success",
-    "data": null
+        "status": "success",
+        "data": null
     }
     </pre>
 
@@ -62,8 +62,8 @@ This API provides functionality to manage a library system, ensuring secure acce
 - **Payload:**
     <pre>
     {
-    "username": "admin",
-    "password": "admin"
+        "username": "admin",
+        "password": "admin"
     }
     </pre>
 
@@ -72,10 +72,11 @@ This API provides functionality to manage a library system, ensuring secure acce
 - **Response:**
     <pre>
     {
-    "status": "success",
-    "data": {
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUyOTI0NCwiZXhwIjoxNzMyNTI5NTQ0LCJkYXRhIjp7InVzZXJfaWQiOjEwfX0.VOao22x81uRKEt5rEwtXSkjuF2o-jDJPMJ9C8DoiWrQ"
-    }
+        "status": "success",
+        "data": 
+            {
+                "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUyOTI0NCwiZXhwIjoxNzMyNTI5NTQ0LCJkYXRhIjp7InVzZXJfaWQiOjEwfX0.VOao22x81uRKEt5rEwtXSkjuF2o-jDJPMJ9C8DoiWrQ"
+            }
     }
     </pre>
 
@@ -88,22 +89,120 @@ This API provides functionality to manage a library system, ensuring secure acce
   - **JWT Authentication:** Decodes and verifies the provided token.
 - **Payload:**
   <pre>
-  {
-  "author_name": "Juan the Author",
-  "book_title": "Juan Tamad 1.0",
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUyOTU3OSwiZXhwIjoxNzMyNTI5ODc5LCJkYXRhIjp7InVzZXJfaWQiOjEwfX0.6TcZJyz8O92UV2sPrTULBBf2tpFdfjtccfNmfLmkjo0"
-  }
+    {
+        "author_name": "Juan the Author",
+        "book_title": "Juan Tamad 1.0",
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9. eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUyOTU3OSwiZXhwIjoxNzMyNTI5ODc5LCJkYXRhIjp7InVzZXJfaWQiOjEwfX0.6TcZJyz8O92UV2sPrTULBBf2tpFdfjtccfNmfLmkjo0"
+    }
   </pre>
 
   This payload is used to add a new author and their associated book to the library system. It includes author information and a JWT for authorization.
 
 - **Response:**
   <pre>
-  {
-  "status": "success",
-  "data": {
-  "message": "Successfully add books with authors to records.",
-  "new_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUyOTYyMSwiZXhwIjoxNzMyNTI5OTIxLCJkYXRhIjp7InN0YXR1cyI6ImFjdGl2ZSJ9fQ.045aJ8Rml_URBmikoG4X0AvmEkdyXI48ZpJGtszRi0c"
-  }
-  }
+    {
+        "status": "success",
+        "data": 
+            {
+                "message": "Successfully add books with authors to records.",
+                "new_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUyOTYyMSwiZXhwIjoxNzMyNTI5OTIxLCJkYXRhIjp7InN0YXR1cyI6ImFjdGl2ZSJ9fQ.045aJ8Rml_URBmikoG4X0AvmEkdyXI48ZpJGtszRi0c"
+            }
+    }
+  </pre>
+
+4. /display-books-authors-both
+
+- **Method:** `POST`
+- **Description:** Retrieves a comprehensive list of books along with their associated authors, list of authors, and list of books from the library system. This endpoint provides detailed information, allowing users to view all books and their corresponding authors in a single response.
+- **Functionality:**
+  - **Data Retrieval:** Fetches records from the database, including book details and linked author information.
+  - **JWT Authentication:** Verifies the provided JWT token to ensure that only authenticated users can access the data.
+- **Payload:**
+
+  - **books**
+  <pre>
+      {
+          "books_or_authors_or_both": "books",
+          "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUzMDQxMSwiZXhwIjoxNzMyNTMwNzExLCJkYXRhIjp7InVzZXJfaWQiOjEwfX0.DKyK1yDzGnnMW8AqmCWJ9-2daSvaTTRZBfb8bPWTFyI"
+      }
+  </pre>
+
+  - **authors**
+  <pre>
+      {
+          "books_or_authors_or_both": "authors",
+          "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUzMDQxOSwiZXhwIjoxNzMyNTMwNzE5LCJkYXRhIjp7InN0YXR1cyI6ImFjdGl2ZSJ9fQ.oRa9zc58uPI4rsxVmCuUh1N3NBg6VPoem5sYmvyv928"
+      }
+  </pre>
+
+  - **authors with books**
+  <pre>
+      {
+          "books_or_authors_or_both": "both",
+          "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUzMDU2OSwiZXhwIjoxNzMyNTMwODY5LCJkYXRhIjp7InN0YXR1cyI6ImFjdGl2ZSJ9fQ.HClJOrbmGaxcmZDu8--ZaEJfwD8J-A_cCps0WkAxbqM"
+      }
+  </pre>
+
+- **Response:**
+
+  - **books**
+  <pre>
+    {
+        "status": "success",
+        "data": {
+            "books": [
+            {
+                "book_id": 34,
+                "book_title": "Boss Naman V1.0"
+            },
+            {
+                "book_id": 37,
+                "book_title": "Juan Tamad 1.0"
+            }
+            ],
+            "new_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUzMDQxOSwiZXhwIjoxNzMyNTMwNzE5LCJkYXRhIjp7InN0YXR1cyI6ImFjdGl2ZSJ9fQ.oRa9zc58uPI4rsxVmCuUh1N3NBg6VPoem5sYmvyv928"
+        }
+    }
+  </pre>
+
+  - **authors**
+  <pre>
+    {
+        "status": "success",
+        "data": {
+            "authors": [
+            {
+                "author_id": 11,
+                "author_name": "Paulo L."
+            },
+            {
+                "author_id": 14,
+                "author_name": "Juan the Author"
+            }
+            ],
+            "new_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUzMDU2OSwiZXhwIjoxNzMyNTMwODY5LCJkYXRhIjp7InN0YXR1cyI6ImFjdGl2ZSJ9fQ.HClJOrbmGaxcmZDu8--ZaEJfwD8J-A_cCps0WkAxbqM"
+        }
+    }
+  </pre>
+
+  - **authors with books**
+  <pre>
+    {
+        "status": "success",
+        "data": {
+            "collections": [
+            {
+                "collection_id": 22,
+                "book_title": "Boss Naman V1.0",
+                "author_name": "Paulo L."
+            },
+            {
+                "collection_id": 25,
+                "book_title": "Juan Tamad 1.0",
+                "author_name": "Juan the Author"
+            }
+            ],
+            "new_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vc2VjdXJpdHkub3JnIiwiYXVkIjoiaHR0cDovL3NlY3VyaXR5LmNvbSIsImlhdCI6MTczMjUzMDY3MSwiZXhwIjoxNzMyNTMwOTcxLCJkYXRhIjp7InN0YXR1cyI6ImFjdGl2ZSJ9fQ.oHHzJSONg9gi4p6pxbeMglK-GB28Jexv6JLBhU-wj5c"
+        }
+        }
   </pre>
